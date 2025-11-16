@@ -1,4 +1,26 @@
+import pandas as pd
 import streamlit as st
+
+
+def get_clean_value(value: any, placeholder: str = "Não preenchido") -> str:
+    """
+    Verifica se o valor é 'real' (não None, NaN, ou só espaços).
+    Retorna a string limpa se for válida, ou um placeholder se for inválida.
+    """
+    # 1. Checa por None ou NaN (pd.isna() cobre ambos)
+    if pd.isna(value):
+        return placeholder
+    
+    # 2. Converte para string e remove espaços
+    str_value = str(value).strip()
+    
+    # 3. Se a string resultante for vazia, retorna o placeholder
+    if not str_value:
+        return placeholder
+    
+    # 4. Se for válida, retorna a string limpa
+    return str_value
+
 
 def report_card_compact(results: list) -> bool:
     """
@@ -37,21 +59,34 @@ def report_card_compact(results: list) -> bool:
                 nao_encontrados.append(result)
 
         # 2. Criar um expander para cada categoria, se não estiver vazia
+        # Define um placeholder padrão para campos vazios
+        PLACEHOLDER_TEXT = "Não preenchido"
 
         # Expander para Matérias Equivalentes
         if equivalentes:
             with st.expander(f"✅ Matérias Equivalentes ({len(equivalentes)})", expanded=True):
                 for item in equivalentes:
                     col1, col2 = st.columns(2)
-                    with col1:
-                        st.markdown(f"**Origem:** {item.get('origin_names', 'N/A')}")
-                        st.caption(f"Código: `{item.get('origin_codes', 'N/A')}`")
-                    with col2:
-                        st.markdown(f"**Destino (UFRJ):** {item.get('dest_names', 'N/A')}")
-                        st.caption(f"Código: `{item.get('dest_codes', 'N/A')}`")
                     
-                    if item.get('justification'):
-                        st.info(f"**Justificativa:** {item.get('justification')}", icon="ℹ️")
+                    # Usa a função auxiliar para limpar os valores
+                    origin_names = get_clean_value(item.get('origin_names'), PLACEHOLDER_TEXT)
+                    origin_codes = get_clean_value(item.get('origin_codes'), PLACEHOLDER_TEXT)
+                    dest_names = get_clean_value(item.get('dest_names'), PLACEHOLDER_TEXT)
+                    dest_codes = get_clean_value(item.get('dest_codes'), PLACEHOLDER_TEXT)
+                    
+                    # Limpa a justificativa ANTES de verificar no if
+                    justification_text = get_clean_value(item.get('justification'), placeholder=None) # Retorna None se vazio
+
+                    with col1:
+                        st.markdown(f"**Origem:** {origin_names}")
+                        st.caption(f"Código: `{origin_codes}`")
+                    with col2:
+                        st.markdown(f"**Destino (UFRJ):** {dest_names}")
+                        st.caption(f"Código: `{dest_codes}`")
+                    
+                    # O if agora checa a variável limpa, que será None se estiver vazia/NaN
+                    if justification_text:
+                        st.info(f"**Justificativa:** {justification_text}", icon="ℹ️")
                     st.divider()
 
         # Expander para Matérias Não Equivalentes
@@ -59,18 +94,30 @@ def report_card_compact(results: list) -> bool:
             with st.expander(f"❌ Matérias Não Equivalentes ({len(nao_equivalentes)})", expanded=False):
                 for item in nao_equivalentes:
                     col1, col2 = st.columns(2)
-                    with col1:
-                        st.markdown(f"**Origem:** {item.get('origin_names', 'N/A')}")
-                        st.caption(f"Código: `{item.get('origin_codes', 'N/A')}`")
-                    with col2:
-                        st.markdown(f"**Destino (UFRJ):** {item.get('dest_names', 'N/A')}")
-                        st.caption(f"Código: `{item.get('dest_codes', 'N/A')}`")
 
-                    if item.get('justification'):
-                        st.warning(f"**Justificativa:** {item.get('justification')}", icon="⚠️")
+                    # Usa a função auxiliar para limpar os valores
+                    origin_names = get_clean_value(item.get('origin_names'), PLACEHOLDER_TEXT)
+                    origin_codes = get_clean_value(item.get('origin_codes'), PLACEHOLDER_TEXT)
+                    dest_names = get_clean_value(item.get('dest_names'), PLACEHOLDER_TEXT)
+                    dest_codes = get_clean_value(item.get('dest_codes'), PLACEHOLDER_TEXT)
+                    
+                    # Limpa a justificativa ANTES de verificar no if
+                    justification_text = get_clean_value(item.get('justification'), placeholder=None) # Retorna None se vazio
+
+                    with col1:
+                        st.markdown(f"**Origem:** {origin_names}")
+                        st.caption(f"Código: `{origin_codes}`")
+                    with col2:
+                        st.markdown(f"**Destino (UFRJ):** {dest_names}")
+                        st.caption(f"Código: `{dest_codes}`")
+                    
+                    # O if agora checa a variável limpa
+                    if justification_text:
+                        st.warning(f"**Justificativa:** {justification_text}", icon="⚠️")
                     st.divider()
 
         # Expander para Matérias Não Encontradas
+        # (Esta parte não precisou de mudanças, pois 'input_code' deve sempre existir)
         if nao_encontrados:
             with st.expander(f"❓ Matérias Não Encontradas ({len(nao_encontrados)})", expanded=False):
                 codes = [f"`{item.get('input_code')}`" for item in nao_encontrados]

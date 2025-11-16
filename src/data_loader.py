@@ -2,6 +2,17 @@ import pandas as pd
 from pandas import DataFrame
 
 
+# Definindo o set de colunas obrigatórias fora da função
+REQUIRED_COLUMNS = {
+    "Códigos Origem",
+    "Nomes Origem",
+    "Equivalente?",
+    "Códigos UFRJ Destino",
+    "Nomes UFRJ Destino",
+    "Justificativa Parecer"
+}
+
+
 def load_spreadsheet(file_path: str) -> dict[str, DataFrame] | None:
     """
     Carrega todas as abas de uma planilha Excel em um dicionário de DataFrames.
@@ -28,16 +39,26 @@ def load_spreadsheet(file_path: str) -> dict[str, DataFrame] | None:
 
 def get_university_list(spreadsheet_data: dict[str, DataFrame]) -> list[str]:
     """
-    Extrai a lista de nomes das universidades (abas) do dicionário de dados.
+    Extrai a lista de nomes das universidades (abas) do dicionário de dados,
+    filtrando apenas as abas que representam uma faculdade.
+
+    A verificação é feita checando se a aba (DataFrame) contém TODAS
+    as colunas definidas no set REQUIRED_COLUMNS.
 
     Args:
         spreadsheet_data (dict[str, DataFrame]): O dicionário de DataFrames
-                                                  carregado pela função load_spreadsheet.
+                                              carregado pela função load_spreadsheet.
 
     Returns:
-        list[str]: Uma lista com os nomes das universidades (as chaves do dicionário).
+        list[str]: Uma lista filtrada com os nomes das universidades (chaves)
+                   que atendem aos critérios.
     """
     if not spreadsheet_data:
         return []
-    
-    return list(spreadsheet_data.keys())
+
+    # Usamos uma list comprehension para filtrar as chaves
+    return [
+        sheet_name
+        for sheet_name, df in spreadsheet_data.items()
+        if REQUIRED_COLUMNS.issubset(df.columns)
+    ]

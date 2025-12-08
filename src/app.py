@@ -85,7 +85,7 @@ def main():
 
         with col2:
             course_codes_input = render_subject_uploader()
-            course_codes_input = "INF01202 MAT01353 INF05512 INF01108+INF01107 MAT01375"
+            # course_codes_input = "INF01202 MAT01353 INF05512 INF01108+INF01107 MAT01375"
             # st.write(course_codes_input)
 
     # --- ETAPA 4: BOTÃO DE ANÁLISE ---
@@ -110,10 +110,10 @@ def main():
 
         # --- ETAPA 6: GERAÇÃO DO PDF (CONDICIONAL) ---
         if not has_not_found:
-            st.subheader("3. Gerar Relatório")
+            st.subheader("Gerar Relatório")
             st.success("Todas as disciplinas foram encontradas! Você já pode gerar o relatório.")
 
-            pdf_bytes = create_pdf_bytes(st.session_state.analysis_results)
+            pdf_bytes = create_pdf_bytes(st.session_state.analysis_results, LOGO_PATH)
             st.download_button(
                 label="Baixar Relatório em PDF",
                 data=pdf_bytes,

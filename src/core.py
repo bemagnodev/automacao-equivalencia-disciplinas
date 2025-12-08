@@ -1,45 +1,48 @@
 import pandas as pd
-from pandas import DataFrame
 
 def find_equivalencies(
-    all_data: dict[str, DataFrame], 
+    all_data: dict[str, pd.DataFrame], 
     selected_university: str, 
     course_codes_str: str
 ) -> list[dict]:
-    """
-    Busca por equivalências de disciplinas em um DataFrame de uma universidade específica.
-
-    Args:
-        all_data (dict[str, DataFrame]): Dicionário com todos os dados da planilha.
-        selected_university (str): O nome da universidade (aba da planilha) selecionada.
-        course_codes_str (str): Uma string contendo os códigos das disciplinas,
-                                separados por vírgulas, espaços ou quebras de linha.
-
-    Returns:
-        list[dict]: Uma lista de dicionários, onde cada dicionário representa o
-                    resultado de uma busca para um código de disciplina.
-    """
+    
     results = []
     
     university_df = all_data.get(selected_university)
     if university_df is None:
         return [{"error": f"Dados para a universidade '{selected_university}' não encontrados."}]
 
-    # 1. Prepara os códigos de entrada do usuário em um CONJUNTO (set) para facilitar a remoção.
-    cleaned_str = course_codes_str.replace(",", " ").replace("\n", " ")
-    # Usamos um set para que a remoção de itens seja mais eficiente
+    # --- CORREÇÃO 1: Limpeza da Entrada (Input do Usuário) ---
+    # Substituímos '+' por espaço para garantir que "INF01+INF02" vire {"INF01", "INF02"}
+    # Isso resolve o caso se o usuário colar direto com o +.
+    cleaned_str = course_codes_str.replace("+", " ").replace(",", " ").replace("\n", " ")
+    
+    # Set de códigos do usuário (Input)
     input_codes_set = {code.strip().upper() for code in cleaned_str.split() if code.strip()}
 
-    # 2. Itera primeiro sobre as REGRAS da planilha (cada linha do DataFrame)
-    for index, rule in university_df.iterrows():
+    # --- CORREÇÃO 2: Prioridade de Regras (Sort by Complexity) ---
+    # Criamos uma cópia para não bagunçar o original
+    df_sorted = university_df.copy()
+    
+    # Criamos uma coluna temporária para medir o tamanho da regra.
+    # Regras como "INF01+INF02" são mais longas que "INF01".
+    # Queremos processar as MAIORES primeiro.
+    df_sorted['complexity'] = df_sorted['Códigos Origem'].astype(str).apply(len)
+    
+    # Ordena do maior para o menor (Regras compostas vêm pro topo)
+    df_sorted = df_sorted.sort_values(by='complexity', ascending=False)
+
+    # Itera sobre as regras ordenadas
+    for index, rule in df_sorted.iterrows():
         origin_codes_str = str(rule['Códigos Origem'])
-        # Pega a lista de códigos necessários para ESTA regra
-        required_codes = {c.strip().upper() for c in origin_codes_str.split('+')}
         
-        # 3. Verifica se a regra PODE ser aplicada:
-        # A regra só é válida se TODOS os seus códigos requeridos estiverem no input do usuário
-        if required_codes.issubset(input_codes_set):
-            # A regra foi acionada!
+        # --- CORREÇÃO 3: Parse da Regra da Planilha ---
+        # Quebra a regra "INF1+INF2" em um conjunto {"INF1", "INF2"}
+        required_codes = {c.strip().upper() for c in origin_codes_str.split('+') if c.strip()}
+        
+        # Lógica: O usuário tem TODOS os códigos exigidos por essa regra?
+        if required_codes and required_codes.issubset(input_codes_set):
+            # CASAMENTO PERFEITO!
             result_details = {
                 "status": "Encontrado",
                 "origin_codes": rule['Códigos Origem'],
@@ -51,13 +54,11 @@ def find_equivalencies(
             }
             results.append(result_details)
             
-            # 4. CRUCIAL: Se a regra foi aplicada, remove os códigos usados do conjunto de input.
-            # Isso impede que eles sejam usados para acionar outra regra.
+            # Remove os códigos usados do "bolso" do usuário para não serem reusados
             input_codes_set -= required_codes
 
-    # 5. Adiciona os códigos que sobraram no conjunto como 'Não Encontrado na Planilha'
-    # O que sobrou aqui são os códigos que o usuário digitou mas que não se encaixaram em nenhuma regra.
-    for remaining_code in sorted(list(input_codes_set)): # sorted para ordem consistente
+    # Sobras: Códigos que o usuário tem, mas não serviram para nenhuma regra
+    for remaining_code in sorted(list(input_codes_set)):
         results.append({
             "input_code": remaining_code,
             "status": "Não Encontrado na Planilha"

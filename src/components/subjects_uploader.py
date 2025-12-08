@@ -64,7 +64,9 @@ def _extract_clean_codes(dfs: List[pd.DataFrame]) -> str:
         if match:
             clean_codes.append(match.group())
             
-    # --- ALTERAÇÃO AQUI: Join com \n (Quebra de Linha) ---
+        # matches = pattern.findall(item)
+        # clean_codes.extend(matches) # Adiciona todos que achou
+            
     return "\n".join(clean_codes)
 
 # --- 2. O Componente de Interface ---

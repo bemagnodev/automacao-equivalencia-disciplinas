@@ -8,13 +8,13 @@ import streamlit as st
 from components import (
     render_header,
     render_sidebar,
-    render_spreadsheet_uploader,
+    render_subject_uploader,
     report_card_compact,
     load_data_from_url,
     validate_spreadsheet_data
 )
 from core import find_equivalencies
-from data_loader import get_university_list, load_spreadsheet
+from data_loader import get_university_list
 from pdf_generator import create_pdf_bytes
 
 
@@ -68,16 +68,12 @@ def main():
     
     # --- ETAPA 2 e 3: SELEÇÃO DA UNIVERSIDADE E ENTRADA DOS CÓDIGOS ---
 
-    #TODO botar nome aluno
-
-    # Esta lógica permanece a mesma. 
     # Ela só vai rodar se a 'ETAPA 1' for bem-sucedida.
     if st.session_state.spreadsheet_data:
-        st.subheader("Selecione a Universidade e Insira os Códigos")
+        st.subheader("1. Selecione a Universidade e Insira os Códigos")
         
         col1, col2 = st.columns([1, 2])
         
-        #TODO testar visualização em colunas
         with col1:
             st.markdown("**Universidade de Origem**")
             university_list = get_university_list(st.session_state.spreadsheet_data)
@@ -88,13 +84,9 @@ def main():
             )
 
         with col2:
-            st.markdown("**Códigos das Disciplinas de Origem**")
-            course_codes_input = st.text_area(
-                "Códigos das Disciplinas de Origem",
-                height=150,
-                label_visibility="collapsed"  
-            )
-            st.caption("Separe os códigos por espaço, vírgula ou quebra de linha.")
+            course_codes_input = render_subject_uploader()
+            # course_codes_input = "INF01202 MAT01353 INF05512 INF01108+INF01107 MAT01375"
+            # st.write(course_codes_input)
 
     # --- ETAPA 4: BOTÃO DE ANÁLISE ---
         if st.button("Analisar Equivalências", type="primary", use_container_width=True):

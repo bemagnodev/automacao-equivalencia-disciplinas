@@ -1,81 +1,54 @@
-# Analisador de Equivalência de Disciplinas
+# Course Equivalence Analyzer
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue?style=for-the-badge&logo=python)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.27%2B-red?style=for-the-badge&logo=streamlit)
-![Pandas](https://img.shields.io/badge/Pandas-2.0%2B-purple?style=for-the-badge&logo=pandas)
+![Status](https://img.shields.io/badge/status-completed-brightgreen?style=for-the-badge)
 
-## 🎯 Sobre o Projeto
+![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.27%2B-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-2.0%2B-2C2D72?style=for-the-badge&logo=pandas&logoColor=white)
 
-O **Analisador de Equivalência de Disciplinas** é uma ferramenta interativa projetada para simplificar e agilizar a consulta de regras de equivalência entre diferentes universidades ou currículos.
+## Overview
 
-A aplicação permite que coordenadores, administradores ou alunos carreguem uma planilha centralizada contendo todas as regras de equivalência. Com base nesses dados, os usuários podem selecionar uma universidade de origem, inserir uma lista de códigos de disciplinas e instantaneamente descobrir suas equivalentes, gerando um relatório formal em PDF ao final do processo.
+The **Course Equivalence Analyzer** is an interactive tool designed to simplify and speed up the process of checking course equivalence rules between different universities or curricula.
 
-O objetivo é substituir a busca manual em documentos e planilhas complexas por uma interface web rápida, intuitiva e à prova de erros.
+The project was developed to automate an existing course equivalence analysis process at the Institute of Computing at the Federal University of Rio de Janeiro (IC/UFRJ), replacing manual searches in complex documents and spreadsheets with a simple web interface.
 
-## ✨ Funcionalidades Principais
+The application allows coordinators, administrators, or students to upload a centralized spreadsheet containing equivalence rules. Based on this data, users can select the institution of origin, enter a list of course codes, instantly find their equivalent courses, and generate a formal PDF report at the end of the process.
 
--   **Base de Dados Flexível:** Faça o upload de uma planilha (`.xlsx`, `.csv`) com as regras de equivalência, permitindo que a ferramenta se adapte a qualquer instituição.
--   **Consulta Dinâmica:** Selecione a universidade e insira múltiplos códigos de disciplina para análise simultânea.
--   **Resultados Imediatos:** A lógica de busca exibe os resultados da equivalência diretamente na tela.
--   **Geração de Relatório:** Exporte um relatório limpo e profissional em formato `.pdf` com os resultados da análise.
--   **Interface Simples e Direta:** Construído com Streamlit para uma experiência de usuário limpa e focada na tarefa.
+## Key Features
 
-## ⚙️ Como Usar a Ferramenta
+- **Flexible data source:** upload a spreadsheet (`.xlsx` or `.csv`) containing course equivalence rules, allowing the tool to adapt to different institutions or curricula.
+- **Dynamic search:** select the institution of origin and enter multiple course codes for simultaneous analysis.
+- **Immediate results:** the search logic displays course equivalence results directly on the page.
+- **PDF report generation:** export a clean and formal `.pdf` report with the analysis results.
+- **Simple interface:** built with Streamlit to provide a focused and straightforward user experience.
 
-O fluxo de trabalho é dividido em etapas claras na própria interface:
+## How to Use
 
-1.  **Carregue a Planilha de Regras:**
-    -   Na seção "1. Faça o Upload da Planilha de Equivalências", clique em "Procurar arquivos".
-    -   Selecione a planilha (`.xlsx` ou `.csv`) que contém a base de dados com as regras. A aplicação irá carregá-la e prepará-la para a consulta.
+The workflow is divided into clear steps inside the interface:
 
-2.  **Selecione a Universidade e Insira os Códigos:**
-    -   Na seção "2. Selecione a Universidade e Insira os Códigos", escolha a **Universidade de Origem** na lista suspensa.
-    -   No campo de texto ao lado, digite ou cole os **códigos das disciplinas** que deseja analisar. Você pode separá-los por espaço, vírgula ou quebra de linha.
+1. **Upload the equivalence rules spreadsheet**
+   - In the upload section, select the spreadsheet (`.xlsx` or `.csv`) containing the equivalence rules.
+   - The application loads and prepares the data for analysis.
 
-3.  **Analise e Veja o Resultado:**
-    -   Clique no botão **"Analisar Equivalências"**.
-    -   O sistema buscará as correspondências na planilha e exibirá os resultados logo abaixo.
+2. **Select the institution and enter course codes**
+   - Choose the **institution of origin** from the dropdown menu.
+   - Enter the **course codes** you want to analyze. Codes can be separated by spaces, commas, or line breaks.
 
-4.  **Baixe o Relatório em PDF:**
-    -   Se todas as disciplinas inseridas forem encontradas, um botão **"Baixar Relatório em PDF"** aparecerá.
-    -   Clique nele para salvar um documento formal com os resultados da sua consulta.
+3. **Analyze the results**
+   - Click the analysis button.
+   - The system searches for matching equivalence rules and displays the results on the page.
 
-## 🛠️ Para Desenvolvedores (Estrutura do Projeto)
+4. **Download the PDF report**
+   - If all inserted courses are found, a download button becomes available.
+   - Click it to save a formal report with the analysis results.
 
-O projeto é modularizado para facilitar a manutenção e escalabilidade.
+## Project Structure
 
--   `main.py`: Ponto de entrada da aplicação Streamlit. Orquestra o fluxo da interface, gerencia o estado da sessão (`st.session_state`) e chama os outros módulos.
--   `/components`: Contém os módulos responsáveis por renderizar partes específicas da UI (cabeçalho, barra lateral, uploader de arquivos, etc.), mantendo o `main.py` mais limpo.
--   `data_loader.py`: Funções para carregar, validar e pré-processar a planilha de regras enviada pelo usuário.
--   `core.py`: Abriga a lógica principal da aplicação, incluindo a função `find_equivalencies` que realiza a busca pelas equivalências na base de dados.
--   `pdf_generator.py`: Responsável por pegar os resultados da análise e criar um documento PDF para download.
--   `/assets`: Armazena arquivos estáticos como o ícone (`favicon`) e o logo da aplicação.
+The project is modularized to improve maintainability and scalability.
 
-### Como Executar Localmente
-
-1.  **Clone o repositório:**
-    ```bash
-    git clone https://URL_DO_SEU_REPOSITORIO.git
-    cd nome-do-diretorio
-    ```
-
-2.  **Crie um ambiente virtual e ative-o:**
-    ```bash
-    python -m venv .venv
-    # Windows
-    .venv\Scripts\activate
-    # macOS / Linux
-    source .venv/bin/activate
-    ```
-
-3.  **Instale as dependências:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4.  **Execute a aplicação Streamlit:**
-    ```bash
-    streamlit run main.py
-    ```
-
-5.  Acesse `http://localhost:8501` no seu navegador.
+- `main.py`: Streamlit application entry point. It orchestrates the interface flow, manages `st.session_state`, and calls the other modules.
+- `/components`: UI components such as header, sidebar, file uploader, and other interface elements.
+- `data_loader.py`: functions for loading, validating, and preprocessing the uploaded spreadsheet.
+- `core.py`: main application logic, including the `find_equivalencies` function that searches for equivalence rules.
+- `pdf_generator.py`: generates the PDF report from the analysis results.
+- `/assets`: static files such as favicon and application logo.
